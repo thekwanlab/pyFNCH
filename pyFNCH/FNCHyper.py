@@ -325,6 +325,16 @@ class MLE(ABC):
         return self.score_statistic(weight, x) - stats.chi2.isf(self.alpha, 1)
 
     def fit(self, x: int):
+        """Compute the maximum likelihood estimate of the weight parameter for a Fisher Non-Central
+        Hypergeometric distribution. The paremeter is optimized on the bounds [1e-5, 1e5]. Best estimates outside
+        of this range will return a warning and a zero or np.nan object for the mle.
+
+        Args:
+            x (int): the observed number of successes in the trial
+
+        Returns:
+            MaximumLikelihoodEstimate: the estimate, its various confidence intervals, and the significance threshold used
+        """
         search_lower_bound, search_upper_bound = 1e-5, 1e5
 
         try:
@@ -389,7 +399,9 @@ class MLE(ABC):
                 f"A confidence interval bound might be out of our search bounds (f{search_lower_bound} to {search_upper_bound}). Not returning any confidence intervals"
             )
             logging.warning(e)
-            return MaximumLikelihoodEstimate(mle=maximum_likelihood_estimate, alpha=self.alpha)
+            return MaximumLikelihoodEstimate(
+                mle=maximum_likelihood_estimate, alpha=self.alpha
+            )
 
         return MaximumLikelihoodEstimate(
             mle=maximum_likelihood_estimate,
@@ -474,6 +486,15 @@ class MaximumLikelihoodEstimate:
         score_ci_bounds: tuple[float, float] = None,
         wald_ci_bounds: tuple[float, float] = None,
     ):
+        """Create an object storing information for a maximum likelihood estimate
+
+        Args:
+            mle (float): estimate
+            alpha (float): significance threshold used for computing confidence intervals
+            lr_ci_bounds (tuple[float, float], optional): Likelihood Ratio test confidence interval. Defaults to None.
+            score_ci_bounds (tuple[float, float], optional): Score statistic test confidence interval. Defaults to None.
+            wald_ci_bounds (tuple[float, float], optional): Wald confidence interval. Defaults to None.
+        """
         self._mle = mle
         self._alpha = alpha
         self._lr_ci = lr_ci_bounds
@@ -490,6 +511,3 @@ Confidence intervals computed at significance threshold {self._alpha:0.2f}
 
     def __str__(self):
         return f"Maximum Likelihood Estimate: {self._mle:0.4}"
-
-
-pass
