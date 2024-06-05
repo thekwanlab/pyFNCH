@@ -1,3 +1,16 @@
 # pyFNCH
 
 Fisher Non Central Hypergeometric distributions can be applied to statistical tasks modeled by a biased urn, but the probability function contains a combinatorial explosion. This package implements an accurate and efficient estimation algorithm developed by [Liao and Rosen, 2001](https://www.tandfonline.com/doi/abs/10.1198/000313001753272547), specifically for maximum likelihood estimation
+
+# Usage
+
+```
+estimation = FastMLE(n_success = 500, n_failure = 500, m_draws = 500)
+mle = estimation.fit(x = 400)
+
+print(mle._mle)
+print(mle._lr_ci)
+print(mle._score_ci)
+print(mle._wald_ci)
+```
+
